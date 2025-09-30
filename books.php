@@ -15,7 +15,6 @@ class Books {
         $this->db = new Database();
     }
 
-    // Fetch a single book by its ID
     public function getBookById($id) {
         $sql = "SELECT * FROM books WHERE id = :id LIMIT 1";
         $stmt = $this->db->connect()->prepare($sql);
@@ -25,7 +24,6 @@ class Books {
         return $book ? $book : false;
     }
 
-    // Add a new book using the class properties
     public function addBook() {
         $sql = "INSERT INTO books (title, author, genre, publication_year) 
                 VALUES (:title, :author, :genre, :publication_year)";
@@ -37,7 +35,6 @@ class Books {
         return $query->execute();
     }
 
-    // Get all books ordered by title ascending
     public function viewBook() {
         $sql = "SELECT * FROM books ORDER BY title ASC";
         $query = $this->db->connect()->prepare($sql);
@@ -46,5 +43,28 @@ class Books {
         } else {
             return null;
         }
+    }
+
+    public function updateBook($id) {
+        $sql = "UPDATE books SET 
+                    title = :title, 
+                    author = :author, 
+                    genre = :genre, 
+                    publication_year = :publication_year 
+                WHERE id = :id";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(":title", $this->title);
+        $query->bindParam(":author", $this->author);
+        $query->bindParam(":genre", $this->genre);
+        $query->bindParam(":publication_year", $this->publication_year);
+        $query->bindParam(":id", $id, PDO::PARAM_INT);
+        return $query->execute();
+    }
+
+    public function deleteBook($id) {
+        $sql = "DELETE FROM books WHERE id = :id";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(":id", $id, PDO::PARAM_INT);
+        return $query->execute();
     }
 }
